@@ -76,7 +76,17 @@ class MainActivity : AppCompatActivity() {
         imageCapture.takePicture(ContextCompat.getMainExecutor(this), object : ImageCapture.OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
                 super.onCaptureSuccess(image)
-                val bitmap = image.image?.toBitmap()
+                //for samsung we need to rotate first before cropping
+                var bitmap = image.image?.toBitmap()
+
+                if(image.width > image.height){
+                    try{
+                        bitmap = image.image?.toBitmap()?.rotate(90)
+                    }catch(exc: Exception) {
+                        Log.e(TAG, "MASS - Failed to rotate", exc)
+                    }
+                }
+
                 bitmap?.let {
                     val croppedImage = cropImage(it, viewFinder, square)
                     val path = saveImage(croppedImage)
@@ -192,7 +202,7 @@ class MainActivity : AppCompatActivity() {
         val topFinal = topFrame * heightReal / heightOriginal
         val bitmapFinal = Bitmap.createBitmap(
             bitmap,
-            leftFinal+250, topFinal, widthFinal-500, heightFinal
+            leftFinal+200, topFinal, widthFinal-500, heightFinal
         )
         val stream = ByteArrayOutputStream()
         bitmapFinal.compress(
@@ -201,15 +211,15 @@ class MainActivity : AppCompatActivity() {
             stream
         ) //100 is the best quality possible
 
-        Log.d("NAUFAL - widthCamera", widthOriginal.toString())
-        Log.d("NAUFAL - heightCamera", heightOriginal.toString())
-        Log.d("NAUFAL - widthFrame", widthFrame.toString())
-        Log.d("NAUFAL - heightFrame", heightFrame.toString())
-        Log.d("NAUFAL - widthReal", widthReal.toString())
-        Log.d("NAUFAL - heightReal", heightReal.toString())
-        Log.d("NAUFAL - leftFrame", leftFrame.toString())
-        Log.d("NAUFAL - topFrame", topFrame.toString())
-        Log.d("NAUFAL - rightFrame", reference.right.toString())
+        Log.d("MASS - widthCamera", widthOriginal.toString())
+        Log.d("MASS - heightCamera", heightOriginal.toString())
+        Log.d("MASS - widthFrame", widthFrame.toString())
+        Log.d("MASS - heightFrame", heightFrame.toString())
+        Log.d("MASS - widthReal", widthReal.toString())
+        Log.d("MASS - heightReal", heightReal.toString())
+        Log.d("MASS - leftFrame", leftFrame.toString())
+        Log.d("MASS - topFrame", topFrame.toString())
+        Log.d("MASS - rightFrame", reference.right.toString())
 
         return stream.toByteArray()
     }
