@@ -76,9 +76,10 @@ class MainActivity : AppCompatActivity() {
         imageCapture.takePicture(ContextCompat.getMainExecutor(this), object : ImageCapture.OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
                 super.onCaptureSuccess(image)
-                //for samsung we need to rotate first before cropping
+                // for other device
                 var bitmap = image.image?.toBitmap()
 
+                //for samsung we need to rotate first before cropping
                 if(image.width > image.height){
                     try{
                         bitmap = image.image?.toBitmap()?.rotate(90)
